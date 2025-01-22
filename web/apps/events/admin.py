@@ -11,4 +11,7 @@ class EventAdmin(admin.ModelAdmin):
         'register_link'
     )   
     
+    search_fields = (
+        'name__iregex',
+    )
     readonly_fields = ('members', )  

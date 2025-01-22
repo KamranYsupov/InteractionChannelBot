@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.db.models import Q
 
 from .models import TelegramUser, Company
 
-
+    
 @admin.register(TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
     list_display = (
@@ -17,11 +18,20 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'status',
         'manager_account'
     )     
+    list_filter = (
+        'company', 
+        'status', 
+        'manager_account'
+    )
     
-    #readonly_fields = ('telegram_id', )
+    search_fields = (
+        'telegram_id__iregex',
+        'username__iregex',
+    )
+    readonly_fields = ('telegram_id', 'username')    
 
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    pass    
+    search_fields = ('name__iregex', )    
 

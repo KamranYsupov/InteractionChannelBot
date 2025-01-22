@@ -41,6 +41,7 @@ class PollOptionInline(admin.TabularInline):
 class PollAdmin(admin.ModelAdmin):
     exclude = ('poll_id', 'votes_data') 
     readonly_fields = ('created_at', )
+    search_fields = ('question__iregex', )
     
     filter_horizontal = ('receivers', )
     
@@ -52,6 +53,10 @@ class PollAdmin(admin.ModelAdmin):
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
+    search_fields = (
+        'name__iregex', 
+        'text__iregex',
+    )
     readonly_fields = ('created_at', )
     
     filter_horizontal = ('receivers', )    
@@ -62,6 +67,10 @@ class NotificationAdmin(admin.ModelAdmin):
     
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+    search_fields = (
+        'name__iregex', 
+        'text__iregex',
+    )
     readonly_fields = ('created_at', )
     
     def has_change_permission(self, request, obj=None):

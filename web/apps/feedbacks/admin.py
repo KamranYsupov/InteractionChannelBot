@@ -11,10 +11,11 @@ from .models import (
 class FeedBackAdminMixin:
     list_display = ('short_text', 'status')
     list_editable = ('status', )
+    list_filter = ('status', )
     
     fields = ('text', 'status', 'telegram_user')
     readonly_fields = ('text', 'telegram_user', )
-    
+
     @admin.display(description='Текст')
     def short_text(self, obj):
         return obj.get_short_text()
@@ -24,6 +25,7 @@ class FeedBackAdminMixin:
 class PostFeedBackRequestAdmin(admin.ModelAdmin): 
     list_display = ('telegram_user', 'status', 'post')
     list_editable = ('status', )
+    list_filter = ('post', ) 
     
     readonly_fields = ('post', 'telegram_user')
     
@@ -35,7 +37,7 @@ class FeedBackAdmin(FeedBackAdminMixin, admin.ModelAdmin):
     
 @admin.register(Question)
 class QuestionAdmin(FeedBackAdminMixin, admin.ModelAdmin): 
-    pass
+    search_fields = ('text__iregex', )
     
     
 @admin.register(PostTopicOffer)
