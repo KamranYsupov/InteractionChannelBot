@@ -10,22 +10,27 @@ from web.db.model_mixins import (
 class Event(AsyncBaseModel):
     """Модель мероприятия"""
     name = models.CharField(
-        _("Название"),
+        _('Название'),
         max_length=150,
     )
     date = models.DateField(
-        _("Дата проведения"),
+        _('Дата проведения'),
         auto_now=False,
         auto_now_add=False
     )
     register_link = models.URLField(
-        _("Ссылка на регистрацию"), 
+        _('Ссылка на регистрацию'), 
         max_length=200
     )
     
+    members = models.ManyToManyField(
+        'telegram_users.TelegramUser', 
+        verbose_name=_('Участники')
+    )
+    
     class Meta:
-        verbose_name = _("Мероприятие")
-        verbose_name_plural = _("Мероприятия")
+        verbose_name = _('Мероприятие')
+        verbose_name_plural = _('Мероприятия')
         ordering = ['-date']
 
     def __str__(self):

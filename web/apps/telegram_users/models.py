@@ -38,6 +38,11 @@ class TelegramUser(AbstractTelegramUser):
         default=None,
         blank=True,
     )
+    comment = models.CharField(
+        _('Комментарий'),
+        max_length=150,
+        blank=True,
+    )
     time_joined = models.DateTimeField(
         _('Время добавления'),
         auto_now_add=True
@@ -63,15 +68,16 @@ class TelegramUser(AbstractTelegramUser):
     
     
 class Company(AsyncBaseModel):
+    """Модель компании"""
     name = models.CharField(
-        _("Название"),
+        _('Название'),
         max_length=150,
         unique=True,
     )
     
     class Meta:
-        verbose_name = _("Компания")
-        verbose_name_plural = _("Компании")
+        verbose_name = _('Компания')
+        verbose_name_plural = _('Компании')
 
     def __str__(self):
         return self.name

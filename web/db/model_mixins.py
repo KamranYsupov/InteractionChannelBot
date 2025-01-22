@@ -55,3 +55,33 @@ class TimestampMixin(models.Model):
 
     class Meta:
         abstract = True
+        
+        
+class TelegramMessageModelMixin(models.Model):
+    name = models.CharField(
+        _('Название(опционально)'),
+        max_length=150,
+        null=True,
+        blank=True,
+        default=None,
+    )
+    text = models.TextField(
+        _('Текст'),
+        max_length=4000,
+    )
+    is_send = models.BooleanField(
+        _('Отправить?'),
+        default=False,
+    )
+
+    class Meta:
+        abstract = True
+        
+    def __str__(self):
+        if self.name:
+            return self.name
+        if len(self.text) > 100:
+            return f'{self.text[:100]}...'
+        
+        return self.text
+        

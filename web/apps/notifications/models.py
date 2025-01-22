@@ -4,51 +4,50 @@ from django.conf import settings
 
 from web.db.model_mixins import (
     AsyncBaseModel,
+    TelegramMessageModelMixin
 )
 
     
-class Notification(AsyncBaseModel):
+class Notification(AsyncBaseModel, TelegramMessageModelMixin):
     """Модель telegram уведомления"""
-    name = models.CharField(
-        _("Название(опционально)"),
-        max_length=150,
-        null=True,
-        blank=True,
-        default=None,
-    )
-    text = models.TextField(_("Текст"))
-    is_send = models.BooleanField(
-        _("Отправить?"),
-        default=False,
+
+    receivers = models.ManyToManyField(
+        'telegram_users.TelegramUser', 
+        verbose_name=_('Получатели')
     )
     
     class Meta:
-        verbose_name = _("Уведомление")
-        verbose_name_plural = _("Уведомления")
-
-    def __str__(self):
-        if self.name:
-            return self.name
-        if len(self.text) > 100:
-            return f'{self.text[:100]}...'
-        
-        return self.text
+        verbose_name = _('Уведомление')
+        verbose_name_plural = _('Уведомления')
     
+    
+class Post(AsyncBaseModel, TelegramMessageModelMixin):
+    """Модель поста канала"""
+
+    class Meta:
+        verbose_name = _('Пост')
+        verbose_name_plural = _('Посты')
+
     
 class Poll(AsyncBaseModel):
     """Модель опроса"""
     question = models.CharField(
-        _("Вопрос"),
+        _('Вопрос'),
         max_length=300,
     )
     is_send = models.BooleanField(
-        _("Отправить?"),
+        _('Отправить?'),
         default=False,
     )
     
+    receivers = models.ManyToManyField(
+        'telegram_users.TelegramUser', 
+        verbose_name=_('Получатели')
+    )
+    
     class Meta:
-        verbose_name = _("Опрос")
-        verbose_name_plural = _("Опросы")
+        verbose_name = _('Опрос')
+        verbose_name_plural = _('Опросы')
 
     def __str__(self):
         return self.question
@@ -57,23 +56,23 @@ class Poll(AsyncBaseModel):
 class PollOption(AsyncBaseModel):
     """Модель опросника"""
     text = models.CharField(
-        _("Ответ"),
+        _('Ответ'),
         max_length=100,
     )
     votes_count = models.PositiveBigIntegerField(
-        _("Количество голосов"),
+        _('Количество голосов'),
         default=0
     )
     
     poll = models.ForeignKey(
-        "notifications.Poll",
-        verbose_name=_("Опрос"),
+        'notifications.Poll',
+        verbose_name=_('Опрос'),
         related_name='options',
         on_delete=models.CASCADE,
     )
     class Meta:
-        verbose_name = _("Вариант ответа")
-        verbose_name_plural = _("Варианты ответа")
+        verbose_name = _('Вариант ответа')
+        verbose_name_plural = _('Варианты ответа')
 
     def __str__(self):
         return self.text

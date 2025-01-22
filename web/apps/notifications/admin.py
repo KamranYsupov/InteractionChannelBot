@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 
-from .models import Poll, PollOption, Notification
+from .models import Poll, PollOption, Notification, Post
 
 
 
@@ -37,4 +37,9 @@ class PollAdmin(admin.ModelAdmin):
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    pass    
+    filter_horizontal = ('receivers', )    
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    pass  
