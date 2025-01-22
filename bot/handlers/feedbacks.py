@@ -4,10 +4,13 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from django.conf import settings
 
-from .state import (
-    QuestionState,
-    FeedBackState,
-    PostTopicOfferState,
+from .state import ( 
+    RuQuestionState,
+    RuFeedBackState,
+    RuPostTopicOfferState,
+    EnQuestionState,
+    EnFeedBackState,
+    EnPostTopicOfferState,
 )
 from models import (
     TelegramUser,
@@ -17,17 +20,18 @@ from models import (
     PostTopicOffer
 ) 
 from keyboards.reply import (
-    reply_menu_keyboard,
-    reply_cancel_keyboard
+    reply_russian_menu_keyboard,
+    reply_russian_cancel_keyboard,
+    reply_english_menu_keyboard,
+    reply_english_cancel_keyboard,
 )
-
 
 router = Router()
 
 
 @router.message(
     StateFilter('*'),
-    (F.text.casefold() == 'отмена ❌')
+    (F.text.casefold() == 'отмена ❌'),
 )
 async def cancel_callback_handler(
     message: types.Message,
@@ -36,7 +40,7 @@ async def cancel_callback_handler(
     await state.clear()
     await message.answer(
         'Действие отменено',
-        reply_markup=reply_menu_keyboard,
+        reply_markup=reply_russian_menu_keyboard,
     )
 
 
@@ -47,12 +51,12 @@ async def ask_question_message_handler(
 ):
     await message.answer(
         'Что вы хотели бы узнать?',
-        reply_markup=reply_cancel_keyboard,
+        reply_markup=reply_russian_cancel_keyboard,
     )
-    await state.set_state(QuestionState.text)
+    await state.set_state(RuQuestionState.text)
     
     
-@router.message(F.text, QuestionState.text)
+@router.message(F.text, RuQuestionState.text)
 async def process_question_message_handler(
     message: types.Message,
     state: FSMContext,
@@ -67,7 +71,7 @@ async def process_question_message_handler(
     await message.answer(
         'Спасибо за ваш вопрос!\n'
         'С вами скоро свяжется наш менеджер.',
-        reply_markup=reply_menu_keyboard,
+        reply_markup=reply_russian_menu_keyboard,
     )
     await state.clear()
     
@@ -82,12 +86,12 @@ async def send_feedback_message_handler(
     await message.answer(
         'Отправьте сообщение.\n\n'
         'Я запишу и передам его администрации канала.',
-        reply_markup=reply_cancel_keyboard,
+        reply_markup=reply_russian_cancel_keyboard,
     )
-    await state.set_state(FeedBackState.text)
+    await state.set_state(RuFeedBackState.text)
     
     
-@router.message(F.text, FeedBackState.text)
+@router.message(F.text, RuFeedBackState.text)
 async def process_feedback_message_handler(
     message: types.Message,
     state: FSMContext,
@@ -102,7 +106,7 @@ async def process_feedback_message_handler(
     await message.answer(
         'Ваше сообщение принято.\n'
         'Спасибо за обратную связь!',
-        reply_markup=reply_menu_keyboard,
+        reply_markup=reply_russian_menu_keyboard,
     )
     await state.clear()
     
@@ -116,12 +120,12 @@ async def offer_post_topic_message_handler(
 ):
     await message.answer(
         'Отправьте вашу тему для поста.',
-        reply_markup=reply_cancel_keyboard,
+        reply_markup=reply_russian_cancel_keyboard,
     )
-    await state.set_state(PostTopicOfferState.text)
+    await state.set_state(RuPostTopicOfferState.text)
     
     
-@router.message(F.text, PostTopicOfferState.text)
+@router.message(F.text, RuPostTopicOfferState.text)
 async def process_post_topic_message_handler(
     message: types.Message,
     state: FSMContext,
@@ -136,7 +140,123 @@ async def process_post_topic_message_handler(
     await message.answer(
         'Ваше сообщение принято.\n'
         'Спасибо за обратную связь!',
-        reply_markup=reply_menu_keyboard,
+        reply_markup=reply_russian_menu_keyboard,
+    )
+    await state.clear()
+    
+
+@router.message(
+    StateFilter('*'),
+    (F.text.casefold() == 'cancel ❌')
+)
+async def en_cancel_callback_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    await state.clear()
+    await message.answer(
+        'Action canceled',
+        reply_markup=reply_english_menu_keyboard,
+    )
+
+
+@router.message(F.text.casefold() == 'ask a question ❓')
+async def ask_question_message_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    await message.answer(
+        'What would you like to know?',
+        reply_markup=reply_english_cancel_keyboard,
+    )
+    await state.set_state(EnQuestionState.text)
+    
+    
+@router.message(F.text, EnQuestionState.text)
+async def process_question_message_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    telegram_user = await TelegramUser.objects.aget(
+        telegram_id=message.from_user.id
+    )
+    await Question.objects.acreate(
+        text=message.text,
+        telegram_user=telegram_user,
+    )
+    await message.answer(
+        'Thanks for your question!\n'
+        'Our manager will contact you soon.',
+        reply_markup=reply_english_menu_keyboard,
+    )
+    await state.clear()
+    
+    
+@router.message(
+    F.text.casefold() == 'leave a feedback 📤'
+)
+async def send_feedback_message_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    await message.answer(
+        'Send a message.\n\n'
+        "I'll jot it down and pass it to the channel administration.",
+        reply_markup=reply_english_cancel_keyboard,
+    )
+    await state.set_state(EnFeedBackState.text)
+    
+    
+@router.message(F.text, EnFeedBackState.text)
+async def process_feedback_message_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    telegram_user = await TelegramUser.objects.aget(
+        telegram_id=message.from_user.id
+    )
+    await FeedBack.objects.acreate(
+        text=message.text,
+        telegram_user=telegram_user,
+    )
+    await message.answer(
+        'Your message is accepted.\n'
+        'Thank you for the feedback!',
+        reply_markup=reply_english_menu_keyboard,
+    )
+    await state.clear()
+    
+    
+@router.message(
+    F.text.casefold() == 'offer a post topic 📝'
+)
+async def offer_post_topic_message_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    await message.answer(
+        'Send your post topic.',
+        reply_markup=reply_english_cancel_keyboard,
+    )
+    await state.set_state(EnPostTopicOfferState.text)
+    
+    
+@router.message(F.text, EnPostTopicOfferState.text)
+async def process_post_topic_message_handler(
+    message: types.Message,
+    state: FSMContext,
+):
+    telegram_user = await TelegramUser.objects.aget(
+        telegram_id=message.from_user.id
+    )
+    await PostTopicOffer.objects.acreate(
+        text=message.text,
+        telegram_user=telegram_user,
+    )
+    await message.answer(
+        'Your message is accepted.\n'
+        'Thank you for the feedback!',
+        reply_markup=reply_english_menu_keyboard,
     )
     await state.clear()
     
@@ -150,7 +270,10 @@ async def contact_me_callback_handler(
         await callback.answer(
             'Перед отправкой запроса, '
             'добавьте пожалуйста username в свой телеграм аккаунт.\n'
-            'Он нужен для обратной связи.',
+            'Он нужен для обратной связи.\n\n'
+            'Before sending the request, '
+            'please add username to your telegram account.\n'
+            "It's needed for feedback.",
             show_alert=True,
         )
         return
@@ -167,14 +290,18 @@ async def contact_me_callback_handler(
     if not created:
         await callback.answer(
             'Вы уже отправили запрос. '
-            'Ожидайте ответа менеджера.',
+            'Ожидайте ответа менеджера.\n\n'
+            'You have already sent a request. '
+            "Wait for manager's response.",
             show_alert=True,
         )
         return
     
     await callback.answer(
         'Ваш запрос принят,'
-        'скоро вам напишет ваш аккаунт-менеджер.',
+        'скоро вам напишет ваш аккаунт-менеджер.\n\n'
+        'Your request has been accepted,'
+        'your account manager will write to you soon.',
     )
     post_link = f'{settings.CHANNEL_LINK}/{callback.message.message_id}'
     
@@ -185,7 +312,8 @@ async def contact_me_callback_handler(
         
     await callback.bot.send_message(
         text=(
-            f'Пользователь @{telegram_user.username} (ID: {telegram_user.id}) хочет, '
+            f'Пользователь @{telegram_user.username} '
+            f'(ID: {telegram_user.telegram_id}) хочет, '
             f'чтобы с ним связались по <a href="{post_link}">посту</a>\n\n'
             f'Менеджер: {manager_account}'
         ),

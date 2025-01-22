@@ -1,14 +1,26 @@
 from aiogram.fsm.state import StatesGroup, State
 
    
-class QuestionState(StatesGroup):
+class RuQuestionState(StatesGroup):
     text = State()
     
      
-class FeedBackState(StatesGroup):
+class RuFeedBackState(StatesGroup):
     text = State()
     
     
-class PostTopicOfferState(StatesGroup):
+class RuPostTopicOfferState(StatesGroup):
+    text = State()
+    
+
+class EnQuestionState(StatesGroup):
+    text = State()
+    
+     
+class EnFeedBackState(StatesGroup):
+    text = State()
+    
+    
+class EnPostTopicOfferState(StatesGroup):
     text = State()
        

@@ -31,7 +31,9 @@ def get_reply_contact_keyboard(
     return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
     
     
-reply_cancel_keyboard = get_reply_keyboard(buttons=('Отмена ❌',))
+reply_russian_cancel_keyboard = get_reply_keyboard(buttons=('Отмена ❌',))
+reply_english_cancel_keyboard = get_reply_keyboard(buttons=('Cancel ❌',))
+
 reply_russian_menu_keyboard = get_reply_keyboard(
     buttons=(
         'Задать вопрос ❓',
@@ -43,10 +45,10 @@ reply_russian_menu_keyboard = get_reply_keyboard(
 )
 reply_english_menu_keyboard = get_reply_keyboard(
     buttons=(
-        'Ask question ❓',
-        'Leave feedback 📤',
+        'Ask a question ❓',
+        'Leave a feedback 📤',
         'Events calendar 📅',
-        'Offer post topic 📝',
+        'Offer a post topic 📝',
         'Изменить язык 🇷🇺',
     )
 )

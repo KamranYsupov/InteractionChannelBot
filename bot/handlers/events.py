@@ -3,6 +3,7 @@ from aiogram import Router, types, F
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from django.conf import settings
+from asgiref.sync import sync_to_async
 
 from models import (
     TelegramUser,
@@ -64,6 +65,7 @@ async def events_message_handler(
         )
     )
     
+
 @router.message(
     F.text.casefold() == 'посмотреть календарь мероприятий 📅'
 )
@@ -74,7 +76,7 @@ async def ru_events_message_handler(
 ):
     await events_message_handler(telegram_obj, in_english=False)
     
-    
+      
 @router.message(
     F.text.casefold() == 'events calendar 📅'
 )
@@ -84,34 +86,89 @@ async def en_events_message_handler(
     state: FSMContext,
 ):
     await events_message_handler(telegram_obj, in_english=True)
+
+
+async def event_callback_handler(
+    callback: types.CallbackQuery,
+    in_english: bool = False,
+):
+    if in_english:
+        buttons_labels = ("I'll take part", 'Back 🔙' )
+        language_code = 'en'
+    else:
+        buttons_labels = ('Буду участвовать', 'Назад 🔙')
+        language_code = 'ru'
+        
+    event_id, page_number = callback.data.split('_')[2:]
+    buttons = {}
+
+    telegram_user = await TelegramUser.objects.aget(
+        telegram_id=callback.from_user.id
+    )
+    event = await Event.objects.aget(id=event_id)
+    
+    if telegram_user not in await sync_to_async(list)(event.members.all()):
+        buttons[buttons_labels[0]] = f'{language_code}_part_{event_id}_{page_number}'
+        
+    buttons[buttons_labels[1]] = f'{language_code}_events_{page_number}'
+        
+    message_text = get_event_message_info(event, in_english=True)
+        
+    await callback.message.edit_text(
+        message_text,
+        reply_markup=get_inline_keyboard(
+            buttons=buttons,
+            sizes=(1, 1)
+        ),
+        parse_mode='HTML'
+    )
     
 
-@router.callback_query(
-    or_f(
-        F.data.startswith('ru_event_'),
-        F.data.startswith('en_event_')
-    )
-)
-async def change_language_handler(
+@router.callback_query(F.data.startswith('en_event_'))
+async def en_event_callback_handler(
     callback: types.CallbackQuery,
 ):
+    await event_callback_handler(callback, in_english=True)
+
+
+@router.callback_query(F.data.startswith('ru_event_'))
+async def ru_event_callback_handler(
+    callback: types.CallbackQuery,
+):
+    await event_callback_handler(callback, in_english=False)
     
-    language_code, _, event_id, page_number = callback.data.split('_')
-    if language_code == 'en':
-        in_english = True 
-        buttons_labels = ("I'll take part", 'Back 🔙') 
+    
+async def take_part_callback_handler(
+    callback: types.CallbackQuery,
+    in_english: bool = False,
+):
+    if in_english:
+        message_text = "You have been added to the participants's list ✅"
+        back_button_label = 'Back 🔙'
+        language_code = 'en'
     else:
-        in_english = False
-        buttons_labels = ('Буду участвовать', 'Назад 🔙') 
+        message_text = 'Вы добавлены в список участников ✅'
+        back_button_label = 'Назад 🔙'
+        language_code = 'ru'
         
-    buttons_values = (
-        f'{language_code}_part_{event_id}_{page_number}',
-        f'{language_code}_events_{page_number}'
-    )
-    buttons = dict(zip(buttons_labels, buttons_values))
+    event_id, page_number = callback.data.split('_')[2:]
+
+    buttons = {back_button_label: f'{language_code}_events_{page_number}'}
     
+    telegram_user = await TelegramUser.objects.aget(
+        telegram_id=callback.from_user.id
+    )
     event = await Event.objects.aget(id=event_id)
-    message_text = get_event_message_info(event, in_english=in_english)
+    await sync_to_async(event.members.add)(telegram_user)
+    
+    await callback.bot.send_message(
+        text=(
+            f'Пользователь @{telegram_user.username} '
+            f'(ID: {telegram_user.telegram_id}) '
+            f'будет присутствовать на {event.name}'
+        ),
+        chat_id=settings.CONTACT_GROUP_ID,
+    ) 
         
     await callback.message.edit_text(
         message_text,
@@ -123,4 +180,21 @@ async def change_language_handler(
     )
     
     
+@router.callback_query(F.data.startswith('ru_part_'))
+async def ru_take_part_callback_handler(
+    callback: types.CallbackQuery,
+):
+    await take_part_callback_handler(
+        callback,
+        in_english=False
+    )
     
+    
+@router.callback_query(F.data.startswith('en_part_'))
+async def en_take_part_callback_handler(
+    callback: types.CallbackQuery,
+):
+    await take_part_callback_handler(
+        callback,
+        in_english=True
+    )

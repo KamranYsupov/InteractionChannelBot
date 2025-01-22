@@ -26,6 +26,9 @@ async def user_subs_channel_handler(event: ChatMemberUpdated):
 async def poll_answer_handler(poll_answer: types.PollAnswer):
     poll = await Poll.objects.aget(poll_id=int(poll_answer.poll_id))
     
+    if not poll:
+        return
+    
     if poll_answer.option_ids != []:
         for option_index in poll_answer.option_ids:
             option_id = list(poll.votes_data.keys())[option_index]
