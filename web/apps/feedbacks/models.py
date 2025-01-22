@@ -4,11 +4,11 @@ from django.conf import settings
 
 from web.db.model_mixins import (
     AsyncBaseModel,
-    FeedBackRequestMixin
+    FeedBackMixin
 )
 
 
-class PostFeedBackRequest(AsyncBaseModel, FeedBackRequestMixin):
+class PostFeedBackRequest(AsyncBaseModel, FeedBackMixin):
     """Модель вопроса"""
     text = None # Исключаем поле FeedBackRequestMixin.text
     post = models.ForeignKey(
@@ -23,16 +23,25 @@ class PostFeedBackRequest(AsyncBaseModel, FeedBackRequestMixin):
         verbose_name = _('Заявка обратной связи по посту')
         verbose_name_plural = _('Заявки обратной связи по постам')
         
+    def __str__(self):
+        if self.post.name:
+            post_text = self.post.name
+        else:
+            post_text = self.post.get_short_text()
+            
+        return f'@{self.telegram_user.username} - {post_text}'
     
-class FeedBackRequest(AsyncBaseModel, FeedBackRequestMixin):
-    """Модель заявки обратной связи"""
+        
+    
+class FeedBack(AsyncBaseModel, FeedBackMixin):
+    """Модель обратной связи"""
     
     class Meta:
-        verbose_name = _('Заявка обратной связи')
-        verbose_name_plural = _('Заявки обратной связи')
+        verbose_name = _('Обратная связь')
+        verbose_name_plural = _('Обратная связь')
         
         
-class Question(AsyncBaseModel, FeedBackRequestMixin):
+class Question(AsyncBaseModel, FeedBackMixin):
     """Модель вопроса"""
     
     class Meta:
@@ -40,8 +49,9 @@ class Question(AsyncBaseModel, FeedBackRequestMixin):
         verbose_name_plural = _('Вопросы')
         
         
-class PostTopicOffer(AsyncBaseModel, FeedBackRequestMixin):
+class PostTopicOffer(AsyncBaseModel, FeedBackMixin):
     """Модель предложения темы поста"""
+    status = None
     
     class Meta:
         verbose_name = _('Предложение темы поста')

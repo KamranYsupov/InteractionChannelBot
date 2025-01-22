@@ -64,7 +64,7 @@ class TelegramUser(AbstractTelegramUser):
         ordering = ['-time_joined']
 
     def __str__(self):
-        return f'{self.telegram_id} {self.username}'
+        return self.username
     
     
 class Company(AsyncBaseModel):

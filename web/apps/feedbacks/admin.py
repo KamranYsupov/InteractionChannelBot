@@ -1,3 +1,53 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import (
+    PostFeedBackRequest,
+    FeedBack,
+    Question,
+    PostTopicOffer
+)
+
+
+class FeedBackAdminMixin:
+    list_display = ('short_text', 'status')
+    list_editable = ('status', )
+    
+    fields = ('text', 'status', 'telegram_user')
+    readonly_fields = ('text', 'telegram_user', )
+    
+    @admin.display(description='Текст')
+    def short_text(self, obj):
+        return obj.get_short_text()
+    
+    
+@admin.register(PostFeedBackRequest)
+class PostFeedBackRequestAdmin(admin.ModelAdmin): 
+    list_display = ('telegram_user', 'post')
+    readonly_fields = ('post', 'telegram_user')
+    
+    
+@admin.register(FeedBack)
+class FeedBackAdmin(FeedBackAdminMixin, admin.ModelAdmin):
+    pass 
+    
+    
+@admin.register(Question)
+class QuestionAdmin(FeedBackAdminMixin, admin.ModelAdmin): 
+    pass
+    
+    
+@admin.register(PostTopicOffer)
+class PostTopicOfferAdmin(admin.ModelAdmin): 
+    list_display = ('short_text', )
+    
+    fields = ('topic', 'telegram_user')
+    readonly_fields = ('topic', 'telegram_user', )
+    
+    @admin.display(description='Тема')
+    def short_text(self, obj):
+        return obj.get_short_text()
+    
+    @admin.display(description='Тема')
+    def topic(self, obj):
+        return obj.text
+    

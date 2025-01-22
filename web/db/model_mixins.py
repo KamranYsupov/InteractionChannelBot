@@ -82,14 +82,18 @@ class TelegramMessageModelMixin(models.Model):
     def __str__(self):
         if self.name:
             return self.name
-        if len(self.text) > 100:
-            return f'{self.text[:100]}...'
+        
+        return self.get_short_text()
+    
+    def get_short_text(self):
+        if len(self.text) > 150:
+            return f'{self.text[:150]}...'
         
         return self.text
     
     
-class FeedBackRequestMixin(models.Model):
-    """Миксин для заявки"""
+class FeedBackMixin(models.Model):
+    """Миксин обратной связи"""
     class Status:
         GOT = 'GOT'
         IN_PROGRESS = 'IN_PROGRESS'
@@ -129,6 +133,9 @@ class FeedBackRequestMixin(models.Model):
         ordering = ['-created_at']
         
     def __str__(self):
+        return self.get_short_text()
+    
+    def get_short_text(self):
         if len(self.text) > 150:
             return f'{self.text[:150]}...'
         

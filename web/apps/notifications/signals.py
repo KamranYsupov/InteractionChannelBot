@@ -14,12 +14,12 @@ def send_post_after_creation(sender, instance, created, **kwargs):
     
     inline_keyboard = [
         [{
-            'text': 'Свяжитесь со мной',
-            'callback_data': 'contact_me'
+            'text': 'Свяжитесь со мной 📲',
+            'callback_data': f'contact_me_{instance.id}'
         }],
         [{
             'text': 'Перейти в бота',
-            'url': 'https://t.me/InteractionChannelBot'
+            'url': 'https://t.me/InteractionChannelBot?start=123'
         }]
     ]
             
