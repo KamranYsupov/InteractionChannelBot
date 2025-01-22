@@ -1,6 +1,7 @@
 ﻿import loguru
 from aiogram import Router, types
 from aiogram.filters import CommandStart, Command, CommandObject
+from aiogram.fsm.context import FSMContext
 
 from models import TelegramUser
 from keyboards.reply import reply_russian_menu_keyboard
@@ -12,7 +13,10 @@ router = Router()
 async def start_command_handler(
     message: types.Message,
     command: CommandObject,
+    state: FSMContext,
 ):
+    await state.clear()
+    
     if not message.from_user.username:
         await message.answer(
             'Для старта работы бота, '
