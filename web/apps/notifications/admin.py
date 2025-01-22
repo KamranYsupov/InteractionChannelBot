@@ -82,10 +82,8 @@ class PostFeedBackRequestInline(admin.TabularInline):
     )
     
     def has_add_permission(self, request, obj=None):
-        if obj:
-            return False
-        return super().has_add_permission(request, obj)
-
+        return False
+    
       
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -95,6 +93,12 @@ class PostAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('text', 'created_at', )
     
-    inlines = (PostFeedBackRequestInline, )
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            self.inlines = (PostFeedBackRequestInline, )
+            return self.readonly_fields
+        
+        return []
+        
     
  

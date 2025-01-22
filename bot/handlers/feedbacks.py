@@ -295,7 +295,6 @@ async def process_post_topic_message_handler(
 async def contact_me_callback_handler(
     callback: types.CallbackQuery,
 ):
-    print('contanct')
     if not callback.from_user.username:
         await callback.answer(
             'Перед отправкой запроса, '
