@@ -39,11 +39,11 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
         receivers = instance.receivers.all()
         first_receiver = receivers[0]
         poll_options = []
-        instance.votes_data = {}
+        votes_data = {}
         
         for option in instance.options.all():
             poll_options.append(option.text)
-            instance.votes_data[option.id] = []
+            votes_data[option.id] = []
             
         response = telegram_service.send_poll(
             chat_id=first_receiver.telegram_id,
@@ -56,6 +56,7 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
         poll_id = response_data['result']['poll']['id']
         
         instance.poll_id = poll_id
+        instance.votes_data = votes_data
         instance.save()
         
         for receiver in receivers[1:]:
@@ -64,9 +65,7 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
                 from_chat_id=first_receiver.telegram_id,
                 message_id=response_data['result']['message_id']
             )
-            
-        print(instance.votes_data)
-            
+                        
     transaction.on_commit(send_poll)
     
     
