@@ -71,11 +71,11 @@ class PollOption(AsyncBaseModel):
         _('Ответ'),
         max_length=100,
     )
-    votes_count = models.PositiveBigIntegerField(
-        _('Количество голосов'),
-        default=0
-    )
     
+    voters = models.ManyToManyField(
+        'telegram_users.TelegramUser', 
+        verbose_name=_('Пользоветели')
+    )
     poll = models.ForeignKey(
         'notifications.Poll',
         verbose_name=_('Опрос'),

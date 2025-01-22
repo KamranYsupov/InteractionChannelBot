@@ -24,9 +24,12 @@ class PollOptionFormSet(BaseInlineFormSet):
 class PollOptionInline(admin.TabularInline):
     model = PollOption
     formset = PollOptionFormSet
-    fields = ('text', 'votes_count',)
-    readonly_fields = ( 'votes_count', )
+    fields = ('text', 'votes_count', 'voters')
+    readonly_fields = ( 'votes_count', 'voters')
     extra = 2
+    
+    def votes_count(self, obj) -> int:
+        return obj.voters.count()
     
     def has_change_permission(self, request, obj=None):
         return False
@@ -36,6 +39,7 @@ class PollOptionInline(admin.TabularInline):
             return False
         return super().has_add_permission(request, obj)
     
+    votes_count.short_description = 'Количество голосов'
     
 @admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):

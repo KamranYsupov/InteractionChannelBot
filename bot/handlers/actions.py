@@ -4,6 +4,7 @@ from aiogram.filters import ChatMemberUpdatedFilter, IS_MEMBER, IS_NOT_MEMBER
 from aiogram.types import ChatMemberUpdated
 from aiogram.enums import ChatMemberStatus
 from django.conf import settings
+from asgiref.sync import sync_to_async
 
 from models import TelegramUser, Poll, PollOption
 from loader import bot
@@ -25,8 +26,11 @@ async def user_subs_channel_handler(event: ChatMemberUpdated):
 @router.poll_answer()
 async def poll_answer_handler(poll_answer: types.PollAnswer):
     poll = await Poll.objects.aget(poll_id=int(poll_answer.poll_id))
+    telegram_user = await TelegramUser.objects.aget(
+        telegram_id=poll_answer.user.id
+    )
     
-    if not poll:
+    if None in (poll, telegram_user):
         return
     
     if poll_answer.option_ids != []:
@@ -35,7 +39,7 @@ async def poll_answer_handler(poll_answer: types.PollAnswer):
             poll.votes_data[option_id].append(poll_answer.user.id)
             
             poll_option = await PollOption.objects.aget(id=option_id)
-            poll_option.votes_count += 1 
+            await sync_to_async(poll_option.voters.add)(telegram_user)
             await poll_option.asave()
         
         await poll.asave()
@@ -48,7 +52,7 @@ async def poll_answer_handler(poll_answer: types.PollAnswer):
         poll.votes_data[option_id].remove(poll_answer.user.id)
         
         poll_option = await PollOption.objects.aget(id=option_id)
-        poll_option.votes_count -= 1
+        await sync_to_async(poll_option.voters.remove)(telegram_user)
         await poll_option.asave()
         
     await poll.asave()
