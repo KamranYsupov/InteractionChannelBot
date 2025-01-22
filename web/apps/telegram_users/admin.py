@@ -11,7 +11,8 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'username', 
         'company', 
         'status',
-        'manager_account'
+        'manager_account',
+        'time_joined',
     )   
     list_editable = ( 
         'company', 
@@ -28,7 +29,11 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'telegram_id__iregex',
         'username__iregex',
     )
-    readonly_fields = ('telegram_id', 'username')    
+    readonly_fields = (
+        'telegram_id',
+        'username',
+        'time_joined',
+    )    
 
 
 @admin.register(Company)
