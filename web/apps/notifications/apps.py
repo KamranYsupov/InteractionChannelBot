@@ -5,3 +5,6 @@ class NotificationsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'web.apps.notifications'
     verbose_name = 'Сообщения'
+    
+    def ready(self):
+        import web.apps.notifications.signals

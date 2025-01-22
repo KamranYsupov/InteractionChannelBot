@@ -18,7 +18,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'manager_account'
     )     
     
-    readonly_fields = ('telegram_id', )
+    #readonly_fields = ('telegram_id', )
 
 
 @admin.register(Company)

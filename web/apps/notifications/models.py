@@ -35,9 +35,9 @@ class Poll(AsyncBaseModel):
         _('Вопрос'),
         max_length=300,
     )
-    is_send = models.BooleanField(
-        _('Отправить?'),
-        default=False,
+    created_at = models.DateTimeField(
+        _('Время и дата создания'),
+        auto_now_add=True
     )
     
     receivers = models.ManyToManyField(
@@ -54,14 +54,10 @@ class Poll(AsyncBaseModel):
     
     
 class PollOption(AsyncBaseModel):
-    """Модель опросника"""
+    """Модель варианта ответа опроса"""
     text = models.CharField(
         _('Ответ'),
         max_length=100,
-    )
-    votes_count = models.PositiveBigIntegerField(
-        _('Количество голосов'),
-        default=0
     )
     
     poll = models.ForeignKey(

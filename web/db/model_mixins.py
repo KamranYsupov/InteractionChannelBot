@@ -42,14 +42,14 @@ class AbstractTelegramUser(AsyncBaseModel):
     class Meta: 
         abstract = True
     
-    
+        
 class TimestampMixin(models.Model):
     created_at = models.DateTimeField(
-        _('Дата создания'),
+        _('Время и дата создания'),
         auto_now_add=True
     )
     updated_at = models.DateTimeField(
-        _('Дата последнего обновления'),
+        _('Время и дата последнего обновления'),
         auto_now=True
     )
 
@@ -70,13 +70,14 @@ class TelegramMessageModelMixin(models.Model):
         _('Текст'),
         max_length=4000,
     )
-    is_send = models.BooleanField(
-        _('Отправить?'),
-        default=False,
+    created_at = models.DateTimeField(
+        _('Время и дата создания'),
+        auto_now_add=True
     )
 
     class Meta:
         abstract = True
+        ordering = ['-created_at']
         
     def __str__(self):
         if self.name:
@@ -111,6 +112,10 @@ class FeedBackRequestMixin(models.Model):
         default=Status.GOT,
         db_index=True,
     )
+    created_at = models.DateTimeField(
+        _('Время и дата создания'),
+        auto_now_add=True
+    )
     
     telegram_user = models.ForeignKey(
         'telegram_users.TelegramUser',
@@ -121,6 +126,7 @@ class FeedBackRequestMixin(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-created_at']
         
     def __str__(self):
         if len(self.text) > 150:

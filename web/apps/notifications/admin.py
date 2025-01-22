@@ -27,19 +27,40 @@ class PollOptionInline(admin.TabularInline):
     fields = ('text', )
     extra = 2
     
+    def has_change_permission(self, request, obj=None):
+        return False
+    
+    def has_add_permission(self, request, obj=None):
+        if obj:
+            return False
+        return super().has_add_permission(request, obj)
+    
     
 @admin.register(Poll)
-class PollAdmin(admin.ModelAdmin):
-    list_display = ('question',)
+class PollAdmin(admin.ModelAdmin): 
+    readonly_fields = ('created_at', )
+    
+    filter_horizontal = ('receivers', )
     
     inlines = [PollOptionInline]
+    
+    def has_change_permission(self, request, obj=None):
+        return False 
 
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
+    readonly_fields = ('created_at', )
+    
     filter_horizontal = ('receivers', )    
-
-
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+    
+    
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    pass  
+    readonly_fields = ('created_at', )
+    
+    def has_change_permission(self, request, obj=None):
+        return False  
