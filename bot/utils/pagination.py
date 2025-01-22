@@ -26,14 +26,23 @@ class Paginator:
         return self.page_number > 1
     
     
-def get_pagination_buttons(paginator: Paginator, prefix: str) -> dict:
+def get_pagination_buttons(
+    paginator: Paginator,
+    prefix: str,
+    in_english: bool = False,
+) -> dict:
+    buttons = {}
+    
+    if in_english:
+        buttons_labels = ('◀️ Prev.', 'Next ▶️')
+    else:
+        buttons_labels = ('◀️ Пред.', 'След. ▶️')
+        
     buttons = {}
     
     if paginator.has_previous():
-        buttons['◀️ Пред.'] = f'{prefix}_{paginator.page_number - 1}'
+        buttons[buttons_labels[0]] = f'{prefix}_{paginator.page_number - 1}'
     if paginator.has_next():
-        buttons['След. ▶️'] = f'{prefix}_{paginator.page_number + 1}'
+        buttons[buttons_labels[1]] = f'{prefix}_{paginator.page_number + 1}'
     
-    
-        
     return buttons

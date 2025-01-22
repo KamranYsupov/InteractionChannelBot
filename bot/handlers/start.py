@@ -3,7 +3,7 @@ from aiogram import Router, types
 from aiogram.filters import CommandStart, Command, CommandObject
 
 from models import TelegramUser
-from keyboards.reply import reply_menu_keyboard
+from keyboards.reply import reply_russian_menu_keyboard
 
 router = Router()
 
@@ -13,9 +13,17 @@ async def start_command_handler(
     message: types.Message,
     command: CommandObject,
 ):
-    telegram_user, created = await TelegramUser.objects.aget_or_create(
-        telegram_id=message.from_user.id,
-        defaults={'username': message.from_user.username}
+    if not message.from_user.username:
+        await message.answer(
+            'Для старта работы бота, '
+            'добавьте пожалуйста <b>username</b> в свой телеграм аккаунт.',
+            parse_mode='HTML',
+        )
+        return
+    
+    telegram_user, created = (
+        await TelegramUser.objects
+        .aget_or_create_by_from_user(from_user=message.from_user)
     )
     message_text = ''
     
@@ -26,7 +34,7 @@ async def start_command_handler(
     
     await message.answer(
         message_text,
-        reply_markup=reply_menu_keyboard
+        reply_markup=reply_russian_menu_keyboard
     )
     
     

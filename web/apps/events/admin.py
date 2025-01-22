@@ -9,4 +9,6 @@ class EventAdmin(admin.ModelAdmin):
         'name',
         'date', 
         'register_link'
-    )     
+    )   
+    
+    readonly_fields = ('members', )  

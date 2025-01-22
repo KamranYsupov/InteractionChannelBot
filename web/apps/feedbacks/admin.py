@@ -22,7 +22,9 @@ class FeedBackAdminMixin:
     
 @admin.register(PostFeedBackRequest)
 class PostFeedBackRequestAdmin(admin.ModelAdmin): 
-    list_display = ('telegram_user', 'post')
+    list_display = ('telegram_user', 'status', 'post')
+    list_editable = ('status', )
+    
     readonly_fields = ('post', 'telegram_user')
     
     

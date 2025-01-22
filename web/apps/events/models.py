@@ -13,6 +13,10 @@ class Event(AsyncBaseModel):
         _('Название'),
         max_length=150,
     )
+    location = models.CharField(
+        _('Локация'),
+        max_length=150,
+    )
     date = models.DateField(
         _('Дата проведения'),
         auto_now=False,
@@ -25,7 +29,7 @@ class Event(AsyncBaseModel):
     
     members = models.ManyToManyField(
         'telegram_users.TelegramUser', 
-        verbose_name=_('Участники')
+        verbose_name=_('Участники'),
     )
     
     class Meta:

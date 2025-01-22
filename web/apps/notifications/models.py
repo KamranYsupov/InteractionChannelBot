@@ -31,9 +31,21 @@ class Post(AsyncBaseModel, TelegramMessageModelMixin):
     
 class Poll(AsyncBaseModel):
     """Модель опроса"""
+    poll_id = models.PositiveBigIntegerField(
+        _('Telegram Poll ID'),
+        unique=True,
+        db_index=True,
+        null=True,
+        blank=True,
+        default=None
+    )
     question = models.CharField(
         _('Вопрос'),
         max_length=300,
+    )
+    votes_data = models.JSONField(
+        _('Данные голосов'),
+        default=dict
     )
     created_at = models.DateTimeField(
         _('Время и дата создания'),
@@ -58,6 +70,10 @@ class PollOption(AsyncBaseModel):
     text = models.CharField(
         _('Ответ'),
         max_length=100,
+    )
+    votes_count = models.PositiveBigIntegerField(
+        _('Количество голосов'),
+        default=0
     )
     
     poll = models.ForeignKey(

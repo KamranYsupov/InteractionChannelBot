@@ -1,11 +1,31 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from asgiref.sync import sync_to_async
 
 from web.db.model_mixins import (
     AsyncBaseModel,
     AbstractTelegramUser,
 )
+from web.db.base_manager import AsyncBaseManager
+from aiogram.types import User
+
+
+class TelegramUserManager(AsyncBaseManager):
+    async def aget_or_create_by_from_user(
+        self,
+        from_user: User,
+    ):
+        obj, created = await super().aget_or_create(
+            telegram_id=from_user.id,
+            defaults={'username': from_user.username}
+        )
+        
+        if not created and obj.username != from_user.username:
+            obj.username = from_user.username
+            await obj.asave()
+        
+        return obj, created
 
 
 class TelegramUser(AbstractTelegramUser):
@@ -56,15 +76,17 @@ class TelegramUser(AbstractTelegramUser):
         default=None,
         blank=True,
     )
-
-
+    
+    objects = TelegramUserManager()
+    
     class Meta:
         verbose_name = _('пользователь')
         verbose_name_plural = _('Telegram пользователи')
         ordering = ['-time_joined']
 
     def __str__(self):
-        return self.username
+        return self.username if self.username \
+            else f'Пользователь {self.telegram_id}'
     
     
 class Company(AsyncBaseModel):

@@ -24,7 +24,8 @@ class PollOptionFormSet(BaseInlineFormSet):
 class PollOptionInline(admin.TabularInline):
     model = PollOption
     formset = PollOptionFormSet
-    fields = ('text', )
+    fields = ('text', 'votes_count',)
+    readonly_fields = ( 'votes_count', )
     extra = 2
     
     def has_change_permission(self, request, obj=None):
@@ -37,7 +38,8 @@ class PollOptionInline(admin.TabularInline):
     
     
 @admin.register(Poll)
-class PollAdmin(admin.ModelAdmin): 
+class PollAdmin(admin.ModelAdmin):
+    exclude = ('poll_id', 'votes_data') 
     readonly_fields = ('created_at', )
     
     filter_horizontal = ('receivers', )

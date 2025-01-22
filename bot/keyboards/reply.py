@@ -32,12 +32,22 @@ def get_reply_contact_keyboard(
     
     
 reply_cancel_keyboard = get_reply_keyboard(buttons=('Отмена ❌',))
-reply_menu_keyboard = get_reply_keyboard(
+reply_russian_menu_keyboard = get_reply_keyboard(
     buttons=(
         'Задать вопрос ❓',
         'Оставить обратную связь 📤',
         'Посмотреть календарь мероприятий 📅',
         'Предложить тему поста 📝',
+        'Change language 🇺🇸',
+    )
+)
+reply_english_menu_keyboard = get_reply_keyboard(
+    buttons=(
+        'Ask question ❓',
+        'Leave feedback 📤',
+        'Events calendar 📅',
+        'Offer post topic 📝',
+        'Изменить язык 🇷🇺',
     )
 )
 reply_keyboard_remove = ReplyKeyboardRemove()

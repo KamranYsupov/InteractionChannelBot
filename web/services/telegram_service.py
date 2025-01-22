@@ -82,5 +82,18 @@ class TelegramService:
     
         return response
     
+    def get_poll(
+        self,
+        poll_id: int,
+    ):
+        payload = {'poll_id': poll_id}
+
+        response = requests.post(
+            url=f'{self.__bot_api_url}/getPoll', 
+            json=payload,
+        )
+    
+        return response
+    
     
 telegram_service = TelegramService()

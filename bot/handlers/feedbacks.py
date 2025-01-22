@@ -146,12 +146,20 @@ async def process_post_topic_message_handler(
 async def contact_me_callback_handler(
     callback: types.CallbackQuery,
 ):
-    telegram_user, _ = await TelegramUser.objects.aget_or_create(
-        telegram_id=callback.from_user.id,
-        defaults={'username': callback.from_user.username}
-    )
+    if not callback.from_user.username:
+        await callback.answer(
+            'Перед отправкой запроса, '
+            'добавьте пожалуйста username в свой телеграм аккаунт.\n'
+            'Он нужен для обратной связи.',
+            show_alert=True,
+        )
+        return
+    telegram_user, _ = (
+        await TelegramUser.objects
+        .aget_or_create_by_from_user(from_user=callback.from_user)
+    )        
     post_id = callback.data.split('_')[-1]
-    post, created = await PostFeedBackRequest.objects.aget_or_create(
+    post_feedback, created = await PostFeedBackRequest.objects.aget_or_create(
         post_id=post_id,
         telegram_user=telegram_user,
     )
@@ -159,13 +167,14 @@ async def contact_me_callback_handler(
     if not created:
         await callback.answer(
             'Вы уже отправили запрос. '
-            'Ожидайте ответа менеджера.'
+            'Ожидайте ответа менеджера.',
+            show_alert=True,
         )
         return
     
     await callback.answer(
         'Ваш запрос принят,'
-        'скоро вам напишет ваш аккаунт-менеджер.'
+        'скоро вам напишет ваш аккаунт-менеджер.',
     )
     post_link = f'{settings.CHANNEL_LINK}/{callback.message.message_id}'
     
@@ -176,7 +185,7 @@ async def contact_me_callback_handler(
         
     await callback.bot.send_message(
         text=(
-            f'Пользователь @{callback.from_user.username} хочет, '
+            f'Пользователь @{telegram_user.username} (ID: {telegram_user.id}) хочет, '
             f'чтобы с ним связались по <a href="{post_link}">посту</a>\n\n'
             f'Менеджер: {manager_account}'
         ),

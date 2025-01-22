@@ -38,7 +38,13 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
     def send_poll():
         receivers = instance.receivers.all()
         first_receiver = receivers[0]
-        poll_options = [option.text for option in instance.options.all()]
+        poll_options = []
+        instance.votes_data = {}
+        
+        for option in instance.options.all():
+            poll_options.append(option.text)
+            instance.votes_data[option.id] = []
+            
         response = telegram_service.send_poll(
             chat_id=first_receiver.telegram_id,
             question=instance.question,
@@ -47,12 +53,19 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
         
         response_data = response.json()
         
+        poll_id = response_data['result']['poll']['id']
+        
+        instance.poll_id = poll_id
+        instance.save()
+        
         for receiver in receivers[1:]:
             telegram_service.forward_message(
                 chat_id=receiver.telegram_id,
                 from_chat_id=first_receiver.telegram_id,
                 message_id=response_data['result']['message_id']
             )
+            
+        print(instance.votes_data)
             
     transaction.on_commit(send_poll)
     

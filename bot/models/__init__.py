@@ -5,6 +5,9 @@ __all__ = (
     'FeedBack',
     'Question',
     'PostTopicOffer'
+    'Notification',
+    'Poll',
+    'PollOption,'
 )
 
 from web.apps.telegram_users.models import TelegramUser
@@ -14,4 +17,9 @@ from web.apps.feedbacks.models import (
     FeedBack,
     Question,
     PostTopicOffer
+)
+from web.apps.notifications.models import (
+    Notification,
+    Poll,
+    PollOption,
 )
