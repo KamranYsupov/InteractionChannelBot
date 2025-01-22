@@ -3,7 +3,7 @@ from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 
 from .models import Poll, PollOption, Notification, Post
-
+from web.apps.feedbacks.models import PostFeedBackRequest
 
 
 class PollOptionFormSet(BaseInlineFormSet):
@@ -68,14 +68,33 @@ class NotificationAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
     
+  
+class PostFeedBackRequestInline(admin.TabularInline):
+    model = PostFeedBackRequest
+    fields = (
+        'telegram_user',
+        'status',
+        'created_at'
+    )
+    readonly_fields = (
+        'telegram_user',
+        'created_at',
+    )
     
+    def has_add_permission(self, request, obj=None):
+        if obj:
+            return False
+        return super().has_add_permission(request, obj)
+
+      
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     search_fields = (
         'name__iregex', 
         'text__iregex',
     )
-    readonly_fields = ('created_at', )
+    readonly_fields = ('text', 'created_at', )
     
-    def has_change_permission(self, request, obj=None):
-        return False  
+    inlines = (PostFeedBackRequestInline, )
+    
+ 

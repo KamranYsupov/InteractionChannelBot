@@ -22,6 +22,7 @@ class PostFeedBackRequest(AsyncBaseModel, FeedBackMixin):
     class Meta:
         verbose_name = _('Заявка обратной связи по посту')
         verbose_name_plural = _('Заявки обратной связи по постам')
+        ordering = ['-created_at']
         
     def __str__(self):
         if self.post.name:
