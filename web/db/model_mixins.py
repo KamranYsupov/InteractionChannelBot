@@ -58,6 +58,7 @@ class TimestampMixin(models.Model):
         
         
 class TelegramMessageModelMixin(models.Model):
+    """Миксин для телеграм сообщения"""
     name = models.CharField(
         _('Название(опционально)'),
         max_length=150,
@@ -84,4 +85,45 @@ class TelegramMessageModelMixin(models.Model):
             return f'{self.text[:100]}...'
         
         return self.text
+    
+    
+class FeedBackRequestMixin(models.Model):
+    """Миксин для заявки"""
+    class Status:
+        GOT = 'GOT'
+        IN_PROGRESS = 'IN_PROGRESS'
+        ANSWERED = 'ANSWERED'
         
+        CHOICES = (
+            (GOT, _('Получен')),
+            (IN_PROGRESS, _('В работе')),
+            (ANSWERED, _('Отвечен')),
+        )
+        
+    text = models.TextField(
+        _('Текст'),
+        editable=False,
+    )
+    status = models.CharField(
+        verbose_name=_('Статус'),
+        max_length=15,
+        choices=Status.CHOICES,
+        default=Status.GOT,
+        db_index=True,
+    )
+    
+    telegram_user = models.ForeignKey(
+        'telegram_users.TelegramUser',
+        verbose_name=_('Пользователь'), 
+        on_delete=models.CASCADE,
+        editable=False,
+    )
+
+    class Meta:
+        abstract = True
+        
+    def __str__(self):
+        if len(self.text) > 150:
+            return f'{self.text[:150]}...'
+        
+        return self.text

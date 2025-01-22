@@ -1,11 +1,12 @@
 import requests
+from django.conf import settings
 
 
 class TelegramService:
     def __init__(
         self,
-        bot_token: str,
-        api_url: str ,
+        bot_token: str = settings.BOT_TOKEN,
+        api_url: str = settings.TELEGRAM_API_URL
     ):
         self.__bot_token = bot_token
         self.api_url = api_url
@@ -78,3 +79,6 @@ class TelegramService:
         )
     
         return response
+    
+    
+telegram_service = TelegramService()
