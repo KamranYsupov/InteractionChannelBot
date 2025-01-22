@@ -25,6 +25,11 @@ from keyboards.reply import (
     reply_english_menu_keyboard,
     reply_english_cancel_keyboard,
 )
+from utils.bot import (
+    send_question_message_to_group,
+    send_feedback_message_to_group,
+    send_post_topic_message_to_group,
+)
 
 router = Router()
 
@@ -64,7 +69,7 @@ async def process_question_message_handler(
     telegram_user = await TelegramUser.objects.aget(
         telegram_id=message.from_user.id
     )
-    await Question.objects.acreate(
+    question = await Question.objects.acreate(
         text=message.text,
         telegram_user=telegram_user,
     )
@@ -72,6 +77,10 @@ async def process_question_message_handler(
         'Спасибо за ваш вопрос!\n'
         'С вами скоро свяжется наш менеджер.',
         reply_markup=reply_russian_menu_keyboard,
+    )
+    await send_question_message_to_group(
+        telegram_user=telegram_user,
+        question=question
     )
     await state.clear()
     
@@ -99,7 +108,7 @@ async def process_feedback_message_handler(
     telegram_user = await TelegramUser.objects.aget(
         telegram_id=message.from_user.id
     )
-    await FeedBack.objects.acreate(
+    feedback = await FeedBack.objects.acreate(
         text=message.text,
         telegram_user=telegram_user,
     )
@@ -107,6 +116,10 @@ async def process_feedback_message_handler(
         'Ваше сообщение принято.\n'
         'Спасибо за обратную связь!',
         reply_markup=reply_russian_menu_keyboard,
+    )
+    await send_feedback_message_to_group(
+        telegram_user=telegram_user,
+        feedback=feedback
     )
     await state.clear()
     
@@ -133,7 +146,7 @@ async def process_post_topic_message_handler(
     telegram_user = await TelegramUser.objects.aget(
         telegram_id=message.from_user.id
     )
-    await PostTopicOffer.objects.acreate(
+    post_topic = await PostTopicOffer.objects.acreate(
         text=message.text,
         telegram_user=telegram_user,
     )
@@ -141,6 +154,10 @@ async def process_post_topic_message_handler(
         'Ваше сообщение принято.\n'
         'Спасибо за обратную связь!',
         reply_markup=reply_russian_menu_keyboard,
+    )
+    await send_post_topic_message_to_group(
+        telegram_user=telegram_user,
+        post_topic=post_topic
     )
     await state.clear()
     
@@ -180,7 +197,7 @@ async def process_question_message_handler(
     telegram_user = await TelegramUser.objects.aget(
         telegram_id=message.from_user.id
     )
-    await Question.objects.acreate(
+    question = await Question.objects.acreate(
         text=message.text,
         telegram_user=telegram_user,
     )
@@ -188,6 +205,10 @@ async def process_question_message_handler(
         'Thanks for your question!\n'
         'Our manager will contact you soon.',
         reply_markup=reply_english_menu_keyboard,
+    )
+    await send_question_message_to_group(
+        telegram_user=telegram_user,
+        question=question
     )
     await state.clear()
     
@@ -215,7 +236,7 @@ async def process_feedback_message_handler(
     telegram_user = await TelegramUser.objects.aget(
         telegram_id=message.from_user.id
     )
-    await FeedBack.objects.acreate(
+    feedback = await FeedBack.objects.acreate(
         text=message.text,
         telegram_user=telegram_user,
     )
@@ -223,6 +244,10 @@ async def process_feedback_message_handler(
         'Your message is accepted.\n'
         'Thank you for the feedback!',
         reply_markup=reply_english_menu_keyboard,
+    )
+    await send_feedback_message_to_group(
+        telegram_user=telegram_user,
+        feedback=feedback
     )
     await state.clear()
     
@@ -249,7 +274,7 @@ async def process_post_topic_message_handler(
     telegram_user = await TelegramUser.objects.aget(
         telegram_id=message.from_user.id
     )
-    await PostTopicOffer.objects.acreate(
+    post_topic = await PostTopicOffer.objects.acreate(
         text=message.text,
         telegram_user=telegram_user,
     )
@@ -258,6 +283,10 @@ async def process_post_topic_message_handler(
         'Thank you for the feedback!',
         reply_markup=reply_english_menu_keyboard,
     )
+    await send_post_topic_message_to_group(
+        telegram_user=telegram_user,
+        post_topic=post_topic
+    )    
     await state.clear()
     
     
@@ -266,6 +295,7 @@ async def process_post_topic_message_handler(
 async def contact_me_callback_handler(
     callback: types.CallbackQuery,
 ):
+    print('contanct')
     if not callback.from_user.username:
         await callback.answer(
             'Перед отправкой запроса, '
@@ -305,15 +335,12 @@ async def contact_me_callback_handler(
     )
     post_link = f'{settings.CHANNEL_LINK}/{callback.message.message_id}'
     
-    if telegram_user.manager_account:
-        manager_account = f'@{telegram_user.manager_account}'
-    else:
-        manager_account = 'нет'
-        
+    manager_account = f'@{telegram_user.manager_account}' \
+        if telegram_user.manager_account else 'нет'     
     await callback.bot.send_message(
         text=(
             f'Пользователь @{telegram_user.username} '
-            f'(ID: {telegram_user.telegram_id}) хочет, '
+            f'(ID: {telegram_user.telegram_id}) хочет '
             f'чтобы с ним связались по <a href="{post_link}">посту</a>\n\n'
             f'Менеджер: {manager_account}'
         ),

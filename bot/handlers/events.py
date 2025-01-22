@@ -112,7 +112,7 @@ async def event_callback_handler(
         
     buttons[buttons_labels[1]] = f'{language_code}_events_{page_number}'
         
-    message_text = get_event_message_info(event, in_english=True)
+    message_text = get_event_message_info(event, in_english=in_english)
         
     await callback.message.edit_text(
         message_text,
