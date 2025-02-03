@@ -1,5 +1,5 @@
 ﻿import loguru
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.fsm.context import FSMContext
 
@@ -7,7 +7,6 @@ from models import TelegramUser
 from keyboards.reply import reply_russian_menu_keyboard
 
 router = Router()
-
 
 @router.message(CommandStart())
 async def start_command_handler(

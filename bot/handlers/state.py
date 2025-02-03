@@ -24,3 +24,8 @@ class EnFeedBackState(StatesGroup):
 class EnPostTopicOfferState(StatesGroup):
     text = State()
        
+
+class FormatedTextState(StatesGroup):
+    text = State()       
+       
+
