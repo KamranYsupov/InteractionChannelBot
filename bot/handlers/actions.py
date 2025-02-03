@@ -35,7 +35,6 @@ async def poll_answer_handler(poll_answer: types.PollAnswer):
     
     if poll_answer.option_ids != []:
         for option_index in poll_answer.option_ids:
-            print(poll.votes_data)
             option_data = poll.votes_data[str(option_index)]
             option_id = list(option_data.keys())[0]
             poll.votes_data[str(option_index)][option_id].append(poll_answer.user.id)

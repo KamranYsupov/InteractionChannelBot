@@ -1,4 +1,4 @@
-import loguru
+﻿import loguru
 from aiogram import Router, types, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
@@ -311,12 +311,17 @@ async def contact_me_callback_handler(
         .aget_or_create_by_from_user(from_user=callback.from_user)
     )        
     post_id = callback.data.split('_')[-1]
-    post_feedback, created = await PostFeedBackRequest.objects.aget_or_create(
-        post_id=post_id,
-        telegram_user=telegram_user,
+    post_feedback_request_data = {
+	'post_id': post_id,
+        'telegram_user': telegram_user,
+    }
+    post_feedback_requests = await PostFeedBackRequest.objects.afilter(
+        **post_feedback_request_data 
     )
-    
-    if not created:
+    await PostFeedBackRequest.objects.acreate(
+        **post_feedback_request_data 
+    )
+    if post_feedback_requests:
         await callback.answer(
             'Вы уже отправили запрос. '
             'Ожидайте ответа менеджера.\n\n'
@@ -325,12 +330,14 @@ async def contact_me_callback_handler(
             show_alert=True,
         )
         return
+
     
     await callback.answer(
         'Ваш запрос принят,'
         'скоро вам напишет ваш аккаунт-менеджер.\n\n'
         'Your request has been accepted,'
         'your account manager will write to you soon.',
+	show_alert=True,
     )
     post_link = f'{settings.CHANNEL_LINK}/{callback.message.message_id}'
     
