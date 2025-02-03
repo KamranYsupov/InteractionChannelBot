@@ -46,7 +46,7 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
             options_order[index] = [option.id, option.text]
             
         for index in options_order:
-            votes_data[options_order[index][0] = []
+            votes_data[options_order[index][0]] = []
             poll_options.append(options_order[index][1])
             
             
