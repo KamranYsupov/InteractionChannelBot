@@ -35,8 +35,10 @@ async def poll_answer_handler(poll_answer: types.PollAnswer):
     
     if poll_answer.option_ids != []:
         for option_index in poll_answer.option_ids:
-            option_id = list(poll.votes_data.keys())[option_index]
-            poll.votes_data[option_id].append(poll_answer.user.id)
+            print(poll.votes_data)
+            option_data = poll.votes_data[str(option_index)]
+            option_id = list(option_data.keys())[0]
+            poll.votes_data[str(option_index)][option_id].append(poll_answer.user.id)
             
             poll_option = await PollOption.objects.aget(id=option_id)
             await sync_to_async(poll_option.voters.add)(telegram_user)
@@ -45,11 +47,13 @@ async def poll_answer_handler(poll_answer: types.PollAnswer):
         await poll.asave()
         return
            
-    for option_id, votes in poll.votes_data.items():
+    for option_index, option_data in poll.votes_data.items():
+        option_id = list(option_data.keys())[0]
+        votes = poll.votes_data[str(option_index)][option_id]
         if poll_answer.user.id not in votes:
             continue
         
-        poll.votes_data[option_id].remove(poll_answer.user.id)
+        poll.votes_data[str(option_index)][option_id].remove(poll_answer.user.id)
         
         poll_option = await PollOption.objects.aget(id=option_id)
         await sync_to_async(poll_option.voters.remove)(telegram_user)

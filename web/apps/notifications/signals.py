@@ -42,10 +42,9 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
         poll_options = []
         votes_data = {}
         
-        for option in instance.options.all():
-            print(option.text)
+        for index, option in enumerate(instance.options.all()):
             poll_options.append(option.text)
-            votes_data[option.id] = []
+            votes_data[index] = {option.id: []}
                         
         response = telegram_service.send_poll(
             chat_id=first_receiver.telegram_id,
