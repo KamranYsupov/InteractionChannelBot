@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+﻿from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import transaction
 from django.conf import settings
@@ -38,16 +38,17 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
     def send_poll():
         receivers = instance.receivers.all()
         first_receiver = receivers[0]
-        options_data = {}
+        options_order = {}
         poll_options = []
         votes_data = {}
         
-        for option in instance.options.all():
-            options_data[option.id] = option.text
+        for index, option in enumerate(instance.options.all()):
+            options_order[index] = [option.id, option.text]
             
-        for option_id, text in options_data.items():
-            poll_options.append(text)
-            votes_data[option_id] = []
+        for index in options_order:
+            votes_data[options_order[index][0] = []
+            poll_options.append(options_order[index][[1])
+            
             
         response = telegram_service.send_poll(
             chat_id=first_receiver.telegram_id,
