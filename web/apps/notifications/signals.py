@@ -47,7 +47,7 @@ def send_poll_after_creation(sender, instance, created, **kwargs):
             
         for index in options_order:
             votes_data[options_order[index][0] = []
-            poll_options.append(options_order[index][[1])
+            poll_options.append(options_order[index][1])
             
             
         response = telegram_service.send_poll(
