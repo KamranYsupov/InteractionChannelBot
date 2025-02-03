@@ -4,7 +4,8 @@ from django.conf import settings
 
 from web.db.model_mixins import (
     AsyncBaseModel,
-    TelegramMessageModelMixin
+    TelegramMessageModelMixin,
+    TimestampMixin
 )
 
     
@@ -65,12 +66,13 @@ class Poll(AsyncBaseModel):
         return self.question
     
     
-class PollOption(AsyncBaseModel):
+class PollOption(AsyncBaseModel, TimestampMixin):
     """Модель варианта ответа опроса"""
     text = models.CharField(
         _('Ответ'),
         max_length=100,
     )
+    updated_at = None
     
     voters = models.ManyToManyField(
         'telegram_users.TelegramUser', 
@@ -85,6 +87,7 @@ class PollOption(AsyncBaseModel):
     class Meta:
         verbose_name = _('Вариант ответа')
         verbose_name_plural = _('Варианты ответа')
+        ordering = ['created_at']
 
     def __str__(self):
         return self.text
