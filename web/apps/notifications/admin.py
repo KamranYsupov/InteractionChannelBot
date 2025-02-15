@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.forms.models import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 
@@ -25,7 +25,7 @@ class PollOptionInline(admin.TabularInline):
     model = PollOption
     formset = PollOptionFormSet
     fields = ('text', 'votes_count', 'voters')
-    readonly_fields = ( 'votes_count', 'voters')
+    readonly_fields = ('votes_count', 'voters')
     extra = 2
     
     def votes_count(self, obj) -> int:
@@ -40,13 +40,14 @@ class PollOptionInline(admin.TabularInline):
         return super().has_add_permission(request, obj)
     
     votes_count.short_description = 'Количество голосов'
-    
+
+
 @admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):
-    exclude = ('poll_id', 'votes_data') 
+    exclude = ('poll_id', 'votes_data', 'is_published',)
     readonly_fields = ('created_at', )
     search_fields = ('question__iregex', )
-    
+
     filter_horizontal = ('receivers', )
     
     inlines = [PollOptionInline]
@@ -62,9 +63,9 @@ class NotificationAdmin(admin.ModelAdmin):
         'text__iregex',
     )
     readonly_fields = ('created_at', )
-    
-    filter_horizontal = ('receivers', )    
-    
+
+    filter_horizontal = ('receivers', )
+
     def has_change_permission(self, request, obj=None):
         return False
     

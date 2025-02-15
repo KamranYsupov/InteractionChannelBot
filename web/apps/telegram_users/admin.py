@@ -33,7 +33,10 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'telegram_id',
         'username',
         'time_joined',
-    )    
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Company)

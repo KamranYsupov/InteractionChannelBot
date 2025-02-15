@@ -75,6 +75,11 @@ class TelegramMessageModelMixin(models.Model):
         auto_now_add=True
     )
 
+    receivers = models.ManyToManyField(
+        'telegram_users.TelegramUser',
+        verbose_name=_('Получатели')
+    )
+
     class Meta:
         abstract = True
         ordering = ['-created_at']

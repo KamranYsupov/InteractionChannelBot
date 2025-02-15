@@ -11,11 +11,6 @@ from web.db.model_mixins import (
     
 class Notification(AsyncBaseModel, TelegramMessageModelMixin):
     """Модель telegram уведомления"""
-
-    receivers = models.ManyToManyField(
-        'telegram_users.TelegramUser', 
-        verbose_name=_('Получатели')
-    )
     
     class Meta:
         verbose_name = _('Уведомление')
@@ -24,13 +19,14 @@ class Notification(AsyncBaseModel, TelegramMessageModelMixin):
     
 class Post(AsyncBaseModel, TelegramMessageModelMixin):
     """Модель поста канала"""
+    receivers = None
 
     class Meta:
         verbose_name = _('Пост')
         verbose_name_plural = _('Посты')
 
     
-class Poll(AsyncBaseModel):
+class Poll(AsyncBaseModel, TelegramMessageModelMixin):
     """Модель опроса"""
     poll_id = models.PositiveBigIntegerField(
         _('Telegram Poll ID'),
@@ -53,11 +49,9 @@ class Poll(AsyncBaseModel):
         auto_now_add=True
     )
     
-    receivers = models.ManyToManyField(
-        'telegram_users.TelegramUser', 
-        verbose_name=_('Получатели')
-    )
-    
+    name = None
+    text = None
+
     class Meta:
         verbose_name = _('Опрос')
         verbose_name_plural = _('Опросы')
