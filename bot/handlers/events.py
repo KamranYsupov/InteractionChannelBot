@@ -12,7 +12,7 @@ from models import (
 from keyboards.inline import get_inline_keyboard
 from utils.pagination import Paginator, get_pagination_buttons
 from utils.message import get_event_message_info
-from utils.bot import edit_text_or_answer
+from utils.bot import edit_text_or_answer, send_take_part_event_message_to_group
 
 router = Router()
 
@@ -161,15 +161,10 @@ async def take_part_callback_handler(
     event = await Event.objects.aget(id=event_id)
     await sync_to_async(event.members.add)(telegram_user)
     
-    await callback.bot.send_message(
-        text=(
-            f'Пользователь @{telegram_user.username} '
-            f'(ID: {telegram_user.telegram_id}) '
-            f'будет присутствовать на {event.name}'
-        ),
-        chat_id=settings.CONTACT_GROUP_ID,
-    ) 
-        
+    await send_take_part_event_message_to_group(
+        telegram_user=telegram_user,
+        event=event
+    )
     await callback.message.edit_text(
         message_text,
         reply_markup=get_inline_keyboard(

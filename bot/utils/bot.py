@@ -6,7 +6,8 @@ from models import (
     TelegramUser,
     FeedBack,
     Question,
-    PostTopicOffer
+    PostTopicOffer,
+    Event
 ) 
 from loader import bot
 
@@ -71,9 +72,26 @@ async def send_post_topic_message_to_group(
         text=(
             f'Пользователь @{telegram_user.username} '
             f'(ID: {telegram_user.telegram_id}) предложил тему ' 
-            f'<em><b>"{post_topic.text}"</b></em> для поста.\n\n'
+            f'<em><b>"{post_topic.text}"</b></em> для поста.'
+        ),
+        chat_id=settings.CONTACT_GROUP_ID,
+        parse_mode='HTML'
+    )
+
+
+async def send_take_part_event_message_to_group(
+    telegram_user: TelegramUser,
+    event: Event,
+):
+    manager_account = get_manager_account_message(telegram_user)
+    await bot.send_message(
+        text=(
+            f'Пользователь @{telegram_user.username} '
+            f'(ID: {telegram_user.telegram_id}) '
+            f'будет присутствовать на {event.name}\n\n'
             f'Менеджер: {manager_account}'
         ),
         chat_id=settings.CONTACT_GROUP_ID,
         parse_mode='HTML'
     )
+
