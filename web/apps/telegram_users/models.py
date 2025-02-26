@@ -6,6 +6,7 @@ from asgiref.sync import sync_to_async
 from web.db.model_mixins import (
     AsyncBaseModel,
     AbstractTelegramUser,
+    SingletonModelMixin,
 )
 from web.db.base_manager import AsyncBaseManager
 from aiogram.types import User
@@ -103,5 +104,32 @@ class Company(AsyncBaseModel):
 
     def __str__(self):
         return self.name
+
+
+class ChannelSettings(SingletonModelMixin):
+    """Singelton модель настроек канала"""
+
+    channel_id = models.CharField(_('ID канала'), max_length=30)
+    channel_link = models.URLField(_('Ссылка на канал'))
+
+    def __str__(self):
+        return self.channel_link
+
+    class Meta:
+        verbose_name = 'Настройки канала'
+        verbose_name_plural = verbose_name
+
+
+class SuperGroupSettings(SingletonModelMixin):
+    """Singelton модель настроек супер-группы"""
+
+    group_id = models.CharField(_('ID группы'), max_length=30)
+
+    def __str__(self):
+        return self.group_id
+
+    class Meta:
+        verbose_name = 'Настройки супер-группы'
+        verbose_name_plural = verbose_name
 
 

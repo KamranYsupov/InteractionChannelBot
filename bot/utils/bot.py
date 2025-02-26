@@ -1,5 +1,6 @@
 from aiogram import Bot, types
 from aiogram.exceptions import TelegramBadRequest
+from asgiref.sync import sync_to_async
 from django.conf import settings
 
 from models import (
@@ -10,6 +11,8 @@ from models import (
     Event
 ) 
 from loader import bot
+
+from web.apps.telegram_users.models import SuperGroupSettings
 
 
 async def edit_text_or_answer(
@@ -33,7 +36,9 @@ async def send_question_message_to_group(
     telegram_user: TelegramUser,
     question: Question,
 ):
-    manager_account = get_manager_account_message(telegram_user) 
+    manager_account = get_manager_account_message(telegram_user)
+
+    group_settings = await sync_to_async(SuperGroupSettings.load)()
     await bot.send_message(
         text=(
             f'Пользователь @{telegram_user.username} '
@@ -41,7 +46,7 @@ async def send_question_message_to_group(
             f'<em><b>"{question.text}"</b></em>.\n\n'
             f'Менеджер: {manager_account}'
         ),
-        chat_id=settings.CONTACT_GROUP_ID,
+        chat_id=group_settings.group_id,
         parse_mode='HTML'
     )
     
@@ -50,7 +55,9 @@ async def send_feedback_message_to_group(
     telegram_user: TelegramUser,
     feedback: FeedBack,
 ):
-    manager_account = get_manager_account_message(telegram_user)  
+    manager_account = get_manager_account_message(telegram_user)
+
+    group_settings = await sync_to_async(SuperGroupSettings.load)()
     await bot.send_message(
         text=(
             f'Пользователь @{telegram_user.username} '
@@ -58,7 +65,7 @@ async def send_feedback_message_to_group(
             f'<em><b>"{feedback.text}"</b></em>.\n\n'
             f'Менеджер: {manager_account}'
         ),
-        chat_id=settings.CONTACT_GROUP_ID,
+        chat_id=group_settings.group_id,
         parse_mode='HTML'
     )
     
@@ -67,14 +74,15 @@ async def send_post_topic_message_to_group(
     telegram_user: TelegramUser,
     post_topic: PostTopicOffer,
 ):
-    manager_account = get_manager_account_message(telegram_user) 
+    group_settings = await sync_to_async(SuperGroupSettings.load)()
+
     await bot.send_message(
         text=(
             f'Пользователь @{telegram_user.username} '
             f'(ID: {telegram_user.telegram_id}) предложил тему ' 
             f'<em><b>"{post_topic.text}"</b></em> для поста.'
         ),
-        chat_id=settings.CONTACT_GROUP_ID,
+        chat_id=group_settings.group_id,
         parse_mode='HTML'
     )
 
@@ -84,6 +92,8 @@ async def send_take_part_event_message_to_group(
     event: Event,
 ):
     manager_account = get_manager_account_message(telegram_user)
+
+    group_settings = await sync_to_async(SuperGroupSettings.load)()
     await bot.send_message(
         text=(
             f'Пользователь @{telegram_user.username} '
@@ -91,7 +101,7 @@ async def send_take_part_event_message_to_group(
             f'будет присутствовать на {event.name}\n\n'
             f'Менеджер: {manager_account}'
         ),
-        chat_id=settings.CONTACT_GROUP_ID,
+        chat_id=group_settings.group_id,
         parse_mode='HTML'
     )
 

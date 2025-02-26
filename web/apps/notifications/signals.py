@@ -4,6 +4,7 @@ from django.db import transaction
 from django.conf import settings
 
 from .models import Notification, Post, Poll
+from web.apps.telegram_users.models import ChannelSettings, SuperGroupSettings
 from web.services.telegram_service import telegram_service
 
 
@@ -24,7 +25,7 @@ def send_post_after_creation(sender, instance, created, **kwargs):
     ]
 
     telegram_service.send_message(
-        chat_id=settings.CHANNEL_ID,
+        chat_id=ChannelSettings.objects.first().channel_id,
         text=instance.text,
         reply_markup={'inline_keyboard': inline_keyboard}
     )

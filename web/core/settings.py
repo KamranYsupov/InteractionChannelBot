@@ -115,7 +115,3 @@ BOT_LINK = f'https://t.me/{BOT_USERNAME}'
 MAX_MESSAGE_PER_SECOND = int(os.getenv('MAX_MESSAGE_PER_SECOND', 1))
 
 TELEGRAM_API_URL = 'https://api.telegram.org'
-
-CHANNEL_ID = os.getenv('CHANNEL_ID')
-CHANNEL_LINK = os.getenv('CHANNEL_LINK')
-CONTACT_GROUP_ID = os.getenv('CONTACT_GROUP_ID')

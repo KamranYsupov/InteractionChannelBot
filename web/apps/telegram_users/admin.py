@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
-from .models import TelegramUser, Company
+from .models import TelegramUser, Company, ChannelSettings, SuperGroupSettings
+from ...admin.mixins import SingletonModelAdminMixin
 
-    
+
 @admin.register(TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
     list_display = (
@@ -41,5 +44,14 @@ class TelegramUserAdmin(admin.ModelAdmin):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    search_fields = ('name__iregex', )    
+    search_fields = ('name__iregex', )
 
+
+@admin.register(ChannelSettings)
+class ChannelSettingsAdmin(SingletonModelAdminMixin):
+    pass
+
+
+@admin.register(SuperGroupSettings)
+class SuperGroupSettingsAdmin(SingletonModelAdminMixin):
+    pass
