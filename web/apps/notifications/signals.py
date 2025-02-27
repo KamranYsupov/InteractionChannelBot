@@ -20,7 +20,7 @@ def send_post_after_creation(sender, instance, created, **kwargs):
         }],
         [{
             'text': 'Перейти в бота',
-            'url': 'https://t.me/InteractionChannelBot?start=123'
+            'url': f'{settings.BOT_LINK}?start=123'
         }]
     ]
 
