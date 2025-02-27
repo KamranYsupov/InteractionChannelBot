@@ -2,8 +2,10 @@
 from aiogram import Router, types, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
+from asgiref.sync import sync_to_async
 from django.conf import settings
 
+from web.apps.telegram_users.models import SuperGroupSettings, ChannelSettings
 from .state import (
     RuQuestionState,
     RuFeedBackState,
@@ -333,7 +335,10 @@ async def contact_me_callback_handler(
         'скоро вам напишет ваш аккаунт-менеджер.',
         show_alert=True,
     )
-    post_link = f'{settings.CHANNEL_LINK}/{callback.message.message_id}'
+    group_settings: SuperGroupSettings = await sync_to_async(SuperGroupSettings.load)()
+    channel_settings = await sync_to_async(ChannelSettings.load)()
+
+    post_link = f'{channel_settings.channel_id}/{callback.message.message_id}'
 
     manager_account = f'@{telegram_user.manager_account}' \
         if telegram_user.manager_account else 'нет'
@@ -344,6 +349,6 @@ async def contact_me_callback_handler(
             f'чтобы с ним связались по <a href="{post_link}">посту</a>\n\n'
             f'Менеджер: {manager_account}'
         ),
-        chat_id=settings.CONTACT_GROUP_ID,
+        chat_id=group_settings.group_id,
         parse_mode='HTML'
     )
