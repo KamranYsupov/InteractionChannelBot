@@ -13,8 +13,8 @@ class FeedBackAdminMixin:
     list_editable = ('status', )
     list_filter = ('status', )
     
-    fields = ('text', 'status', 'telegram_user')
-    readonly_fields = ('text', 'telegram_user', )
+    fields = ('text', 'status', 'telegram_user', 'created_at')
+    readonly_fields = ('text', 'telegram_user', 'created_at')
 
     @admin.display(description='Текст')
     def short_text(self, obj):
@@ -59,8 +59,8 @@ class QuestionAdmin(FeedBackAdminMixin, admin.ModelAdmin):
 class PostTopicOfferAdmin(admin.ModelAdmin): 
     list_display = ('short_text', )
     
-    fields = ('topic', 'telegram_user')
-    readonly_fields = ('topic', 'telegram_user', )
+    fields = ('topic', 'telegram_user', 'created_at', )
+    readonly_fields = ('topic', 'telegram_user', 'created_at', )
     
     @admin.display(description='Тема')
     def short_text(self, obj):

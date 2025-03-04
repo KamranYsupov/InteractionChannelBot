@@ -153,8 +153,8 @@ async def process_post_topic_message_handler(
         telegram_user=telegram_user,
     )
     await message.answer(
-        'Ваше сообщение принято.\n'
-        'Спасибо за обратную связь!',
+        'Ваше сообщение принято. \n'
+        'Спасибо, что предложили тему для публикации',
         reply_markup=reply_russian_menu_keyboard,
     )
     await send_post_topic_message_to_group(
@@ -336,16 +336,16 @@ async def contact_me_callback_handler(
         show_alert=True,
     )
     group_settings: SuperGroupSettings = await sync_to_async(SuperGroupSettings.load)()
-    channel_settings = await sync_to_async(ChannelSettings.load)()
+    channel_settings: ChannelSettings = await sync_to_async(ChannelSettings.load)()
 
-    post_link = f'{channel_settings.channel_id}/{callback.message.message_id}'
+    post_link = f'{channel_settings.channel_link}/{callback.message.message_id}'
 
     manager_account = f'@{telegram_user.manager_account}' \
         if telegram_user.manager_account else 'нет'
     await callback.bot.send_message(
         text=(
             f'Пользователь @{telegram_user.username} '
-            f'(ID: {telegram_user.telegram_id}) хочет '
+            f'(ID: {telegram_user.telegram_id}) хочет, '
             f'чтобы с ним связались по <a href="{post_link}">посту</a>\n\n'
             f'Менеджер: {manager_account}'
         ),
