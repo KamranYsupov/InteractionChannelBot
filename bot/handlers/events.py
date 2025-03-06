@@ -78,7 +78,7 @@ async def ru_events_message_handler(
     
       
 @router.message(
-    F.text.casefold() == 'events calendar 📅'
+    F.text.casefold() == 'view the event calendar 📅'
 )
 @router.callback_query(F.data.startswith('en_events_'))
 async def en_events_message_handler(
@@ -93,10 +93,10 @@ async def event_callback_handler(
     in_english: bool = False,
 ):
     if in_english:
-        buttons_labels = ("I'll take part", 'Back 🔙' )
+        buttons_labels = ('Planning to participate', 'Back 🔙' )
         language_code = 'en'
     else:
-        buttons_labels = ('Буду участвовать', 'Назад 🔙')
+        buttons_labels = ('Планирую участвовать', 'Назад 🔙')
         language_code = 'ru'
         
     event_id, page_number = callback.data.split('_')[2:]
@@ -143,11 +143,17 @@ async def take_part_callback_handler(
     in_english: bool = False,
 ):
     if in_english:
-        message_text = "You have been added to the participants's list ✅"
+        message_text = (
+            "That's great, your account manager "
+            "will contact you to schedule a metting. Have a nice day!"
+        )
         back_button_label = 'Back 🔙'
         language_code = 'en'
     else:
-        message_text = 'Вы добавлены в список участников ✅'
+        message_text = (
+            'Отлично, ваш аккаунт-менеджер с вами свяжется, '
+            'чтобы назначить встречу. Хорошего дня!'
+        )
         back_button_label = 'Назад 🔙'
         language_code = 'ru'
         

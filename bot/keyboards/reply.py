@@ -46,9 +46,9 @@ reply_russian_menu_keyboard = get_reply_keyboard(
 reply_english_menu_keyboard = get_reply_keyboard(
     buttons=(
         'Ask a question ❓',
-        'Leave a feedback 📤',
-        'Events calendar 📅',
-        'Offer a post topic 📝',
+        'Leave feedback 📤',
+        'View the event calendar 📅',
+        'Suggest a post topic 📝',
         'Изменить язык 🇷🇺',
     )
 )

@@ -57,7 +57,8 @@ async def ask_question_message_handler(
         state: FSMContext,
 ):
     await message.answer(
-        'Что вы хотели бы узнать?',
+        'Мы здесь, чтобы помочь вам быстро решить вопрос. '
+        'Опишите вашу ситуацию в следующем сообщении.',
         reply_markup=reply_russian_cancel_keyboard,
     )
     await state.set_state(RuQuestionState.text)
@@ -76,8 +77,8 @@ async def process_question_message_handler(
         telegram_user=telegram_user,
     )
     await message.answer(
-        'Спасибо за ваш вопрос!\n'
-        'С вами скоро свяжется наш менеджер.',
+        'Спасибо за доверие! Мы ценим ваше время, '
+        'поэтому скоро с вами свяжется аккаунт-менеджер.',
         reply_markup=reply_russian_menu_keyboard,
     )
     await send_question_message_to_group(
@@ -95,8 +96,8 @@ async def send_feedback_message_handler(
         state: FSMContext,
 ):
     await message.answer(
-        'Отправьте сообщение.\n\n'
-        'Я запишу и передам его администрации канала.',
+        'Скажите, что нам улучшить или исправить? '
+        'Обратная связь поступает напрямую в продуктовую команду.',
         reply_markup=reply_russian_cancel_keyboard,
     )
     await state.set_state(RuFeedBackState.text)
@@ -115,8 +116,9 @@ async def process_feedback_message_handler(
         telegram_user=telegram_user,
     )
     await message.answer(
-        'Ваше сообщение принято.\n'
-        'Спасибо за обратную связь!',
+        'Спасибо, что поделились обратной связью. '
+        'Каждое сообщение будет детально проработано '
+        'и вы будете проинформированы о результате. ',
         reply_markup=reply_russian_menu_keyboard,
     )
     await send_feedback_message_to_group(
@@ -134,7 +136,8 @@ async def offer_post_topic_message_handler(
         state: FSMContext,
 ):
     await message.answer(
-        'Отправьте вашу тему для поста.',
+        'О чем вы бы хотели узнать? '
+        'Какие темы вам интересны в наших постах? ',
         reply_markup=reply_russian_cancel_keyboard,
     )
     await state.set_state(RuPostTopicOfferState.text)
@@ -153,8 +156,9 @@ async def process_post_topic_message_handler(
         telegram_user=telegram_user,
     )
     await message.answer(
-        'Ваше сообщение принято. \n'
-        'Спасибо, что предложили тему для публикации',
+        'Ваши идеи - наше вдохновение. '
+        'Команда контента уже старается над созданием' 
+        'полезного поста для вашего бизнеса.',
         reply_markup=reply_russian_menu_keyboard,
     )
     await send_post_topic_message_to_group(
@@ -185,7 +189,8 @@ async def ask_question_message_handler(
         state: FSMContext,
 ):
     await message.answer(
-        'What would you like to know?',
+        'We are here to help you resolve your issue quickly. '
+        'Please describe your situation in the next message. ',
         reply_markup=reply_english_cancel_keyboard,
     )
     await state.set_state(EnQuestionState.text)
@@ -204,8 +209,8 @@ async def process_question_message_handler(
         telegram_user=telegram_user,
     )
     await message.answer(
-        'Thanks for your question!\n'
-        'Our manager will contact you soon.',
+        'Thank you for your trust! '
+        'We value your time, so an account manager will contact you soon.',
         reply_markup=reply_english_menu_keyboard,
     )
     await send_question_message_to_group(
@@ -216,15 +221,15 @@ async def process_question_message_handler(
 
 
 @router.message(
-    F.text.casefold() == 'leave a feedback 📤'
+    F.text.casefold() == 'leave feedback 📤'
 )
 async def send_feedback_message_handler(
         message: types.Message,
         state: FSMContext,
 ):
     await message.answer(
-        'Send a message.\n\n'
-        "I'll jot it down and pass it to the channel administration.",
+        'What can we improve or amend? '
+        'Your feedback goes directly to the product team. ',
         reply_markup=reply_english_cancel_keyboard,
     )
     await state.set_state(EnFeedBackState.text)
@@ -243,8 +248,9 @@ async def process_feedback_message_handler(
         telegram_user=telegram_user,
     )
     await message.answer(
-        'Your message is accepted.\n'
-        'Thank you for the feedback!',
+        'Thank you for sharing your feedback. '
+        'Every message will be carefully reviewed, '
+        'and you will be informed of the outcome.',
         reply_markup=reply_english_menu_keyboard,
     )
     await send_feedback_message_to_group(
@@ -255,14 +261,15 @@ async def process_feedback_message_handler(
 
 
 @router.message(
-    F.text.casefold() == 'offer a post topic 📝'
+    F.text.casefold() == 'suggest a post topic 📝'
 )
 async def offer_post_topic_message_handler(
         message: types.Message,
         state: FSMContext,
 ):
     await message.answer(
-        'Send your post topic.',
+        'What would you like to learn about? '
+        'What topics interest you in our posts? ',
         reply_markup=reply_english_cancel_keyboard,
     )
     await state.set_state(EnPostTopicOfferState.text)
