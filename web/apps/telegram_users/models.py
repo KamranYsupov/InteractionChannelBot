@@ -18,24 +18,29 @@ class TelegramUserManager(AsyncBaseManager):
         self,
         from_user: User,
     ):
-        obj, created = await super().aget_or_create(
+        telegram_user = await super().aget(
             Q(telegram_id=from_user.id) |
             Q(username=from_user.username)
         )
+
+        if not telegram_user:
+            telegram_user = await super().acreate(
+                telegram_id=from_user.id,
+                username=from_user.username
+            )
+
+            return telegram_user, True
+
+
+        if telegram_user.username != from_user.username:
+            telegram_user.username = from_user.username
+
+        if telegram_user.telegram_id != from_user.id:
+            telegram_user.telegram_id = from_user.id
+
+        await telegram_user.asave()
         
-        if created:
-            return obj, created
-
-
-        if obj.username != from_user.username:
-            obj.username = from_user.username
-
-        if obj.telegram_id != from_user.id:
-            obj.telegram_id = from_user.id
-
-        await obj.asave()
-        
-        return obj, created
+        return telegram_user, False
 
 
 class TelegramUser(AbstractTelegramUser):
