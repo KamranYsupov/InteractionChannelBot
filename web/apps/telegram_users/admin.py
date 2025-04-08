@@ -16,12 +16,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'status',
         'manager_account',
         'time_joined',
-    )   
-    list_editable = ( 
-        'company', 
-        'status',
-        'manager_account'
-    )     
+    )
     list_filter = (
         'company', 
         'status', 
@@ -38,8 +33,11 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'time_joined',
     )
 
-    def has_add_permission(self, request, obj=None):
-        return False
+    def get_readonly_fields(self, request, obj=None):
+        if obj is not None:
+            return self.readonly_fields
+
+        return []
 
 
 @admin.register(Company)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from asgiref.sync import sync_to_async
@@ -18,13 +19,21 @@ class TelegramUserManager(AsyncBaseManager):
         from_user: User,
     ):
         obj, created = await super().aget_or_create(
-            telegram_id=from_user.id,
-            defaults={'username': from_user.username}
+            Q(telegram_id=from_user.id) |
+            Q(username=from_user.username)
         )
         
-        if not created and obj.username != from_user.username:
+        if created:
+            return obj, created
+
+
+        if obj.username != from_user.username:
             obj.username = from_user.username
-            await obj.asave()
+
+        if obj.telegram_id != from_user.id:
+            obj.telegram_id = from_user.id
+
+        await obj.asave()
         
         return obj, created
 
