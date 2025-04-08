@@ -36,6 +36,7 @@ class AbstractTelegramUser(AsyncBaseModel):
     username = models.CharField(
         _('Имя пользователя'),
         max_length=150,
+        unique=True,
         db_index=True,
         null=True,
     )
