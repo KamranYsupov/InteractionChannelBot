@@ -22,7 +22,12 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'status', 
         'manager_account'
     )
-    
+    list_editable = (
+        'company',
+        'status',
+        'manager_account'
+    )
+
     search_fields = (
         'telegram_id__iregex',
         'username__iregex',
